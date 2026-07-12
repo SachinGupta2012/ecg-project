@@ -1,0 +1,184 @@
+# ===========================================
+# ECG Arrhythmia Detection - Configuration
+# ===========================================
+
+# --- Project Paths ---
+project:
+  root: "D:/data_science/ecg-project"
+  data_raw: "D:/data_science/ecg-project/data/raw"
+  data_processed: "D:/data_science/ecg-project/data/processed"
+  models: "D:/data_science/ecg-project/models"
+  logs: "D:/data_science/ecg-project/logs"
+  mlflow: "D:/data_science/ecg-project/mlruns"
+
+# --- Dataset ---
+dataset:
+  name: "mitdb"
+  sampling_rate: 360          # Hz
+  channels: 2                 # Lead II and V1
+  duration_per_beat: 0.8      # seconds (288 samples at 360 Hz)
+  window_samples: 288         # samples per beat window
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+
+# --- AAMI Beat Classes ---
+classes:
+  N: 0    # Normal beat
+  S: 1    # Supraventricular ectopic beat
+  V: 2    # Ventricular ectopic beat
+  F: 3    # Fusion beat
+  Q: 4    # Unknown/paced beat
+  num_classes: 5
+
+# --- AAMI Annotation Mapping ---
+# Maps MIT-BIH annotation symbols to AAMI superclasses
+annotation_mapping:
+  N: "N"     # Normal
+  L: "N"     # Left bundle branch block
+  R: "N"     # Right bundle branch block
+  B: "N"     # Bundle branch block
+  A: "S"     # Atrial premature beat
+  a: "S"     # Aberrated atrial premature beat
+  J: "S"     # Nodal (junctional) premature beat
+  S: "S"     # Supraventricular premature beat
+  V: "V"     # Premature ventricular contraction
+  r: "V"     # Ventricular escape beat
+  E: "V"     # Ventricular escape beat
+  F: "F"     # Fusion of ventricular and normal beat
+  f: "Q"     # Fusion of paced and normal beat
+  Q: "Q"     # Unknown beat
+  /: "Q"     # Paced beat
+  x: "Q"     # Non-conducted P wave
+  ?: "Q"     # Measurement classification
+
+# --- Signal Preprocessing ---
+preprocessing:
+  # Bandpass filter
+  filter_type: "bandpass"
+  low_cutoff: 0.5             # Hz
+  high_cutoff: 40.0           # Hz
+  filter_order: 4             # Butterworth filter order
+
+  # Normalization
+  normalization: "z-score"    # z-score per beat
+
+  # Noise removal
+  baseline_removal: true
+  artifact_removal: true
+
+# --- Pan-Tompkins Algorithm ---
+pan_tompkins:
+  # Bandpass filter (for R-peak detection)
+  low_pass_cutoff: 11.0       # Hz
+  high_pass_cutoff: 5.0       # Hz
+  filter_order: 1
+
+  # Derivative
+  derivative_window: 5        # samples
+
+  # Squaring
+  squaring: true
+
+  # Moving window integration
+  integration_window: 150     # ms (~54 samples at 360 Hz)
+
+  # Peak detection
+  refractory_period: 200      # ms (~72 samples) minimum between R-peaks
+  threshold_adaptive: true
+
+# --- Model Architecture ---
+model:
+  # 1D CNN Baseline
+  cnn_baseline:
+    conv_layers:
+      - {out_channels: 32, kernel_size: 7, stride: 1, padding: 3}
+      - {out_channels: 64, kernel_size: 5, stride: 1, padding: 2}
+      - {out_channels: 128, kernel_size: 3, stride: 1, padding: 1}
+    pool_size: 2
+    dropout: 0.3
+    fc_layers: [128, 64]
+
+  # CNN + LSTM
+  cnn_lstm:
+    cnn_layers:
+      - {out_channels: 32, kernel_size: 7, stride: 1, padding: 3}
+      - {out_channels: 64, kernel_size: 5, stride: 1, padding: 2}
+    pool_size: 2
+    lstm_hidden: 128
+    lstm_layers: 2
+    bidirectional: true
+    dropout: 0.3
+    fc_layers: [64]
+
+  # Transformer Encoder
+  transformer:
+    d_model: 128
+    nhead: 8
+    num_encoder_layers: 3
+    dim_feedforward: 256
+    dropout: 0.1
+    max_seq_length: 50
+
+# --- Training ---
+training:
+  batch_size: 64
+  epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler: "cosine"         # cosine, step, reduce_on_plateau
+  scheduler_params:
+    T_max: 100
+    eta_min: 0.00001
+  early_stopping_patience: 15
+  class_weights: "balanced"   # balanced, none
+  seed: 42
+
+# --- Evaluation ---
+evaluation:
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1
+    - auc
+  confusion_matrix: true
+  per_class_metrics: true
+  patient_level: true
+
+# --- MLflow ---
+mlflow:
+  experiment_name: "ecg-arrhythmia-detection"
+  tracking_uri: "D:/data_science/ecg-project/mlruns"
+  log_model: true
+  log_artifacts: true
+
+# --- Backend API ---
+api:
+  host: "0.0.0.0"
+  port: 8000
+  debug: true
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://localhost:3001"
+
+# --- Database ---
+database:
+  host: "localhost"
+  port: 5432
+  name: "ecg_arrhythmia"
+  user: "postgres"
+  password: "postgres"
+  # Use SQLite for v1 if PostgreSQL not available
+  sqlite_path: "D:/data_science/ecg-project/ecg.db"
+
+# --- Frontend ---
+frontend:
+  port: 3000
+  api_url: "http://localhost:8000"
+
+# --- Docker ---
+docker:
+  backend_port: 8000
+  frontend_port: 3000
+  postgres_port: 5432

@@ -1,0 +1,93 @@
+# ===========================================
+# ECG Arrhythmia Detection - Git Ignore
+# ===========================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+eggs/
+*.whl
+pip-wheel-metadata/
+
+# --- Virtual Environment ---
+.venv/
+venv/
+ENV/
+env/
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Jupyter Notebook ---
+.ipynb_checkpoints/
+
+# --- Environment Variables ---
+.env
+.env.local
+.env.*.local
+
+# --- Data (large files - don't push to GitHub) ---
+data/raw/
+data/processed/
+*.dat
+*.hea
+*.atr
+*.qrs
+
+# --- Model Checkpoints ---
+models/
+*.pt
+*.pth
+*.onnx
+*.pkl
+*.joblib
+
+# --- MLflow ---
+mlruns/
+mlartifacts/
+
+# --- Logs ---
+logs/
+*.log
+
+# --- Database ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Docker ---
+docker/data/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Node.js (frontend) ---
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.local
+
+# --- Testing ---
+.coverage
+htmlcov/
+.pytest_cache/
+
+# --- Misc ---
+*.bak
+*.tmp
+*.temp
