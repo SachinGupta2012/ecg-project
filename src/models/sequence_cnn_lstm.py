@@ -22,7 +22,7 @@ import torch.nn.functional as F
 class SequenceCNNLSTM(nn.Module):
     """
     CNN+LSTM that processes sequences of consecutive ECG beats.
-    
+
     The CNN extracts features from each beat independently,
     then the LSTM models the temporal pattern across the sequence.
     """
@@ -64,7 +64,7 @@ class SequenceCNNLSTM(nn.Module):
         dropout : float
             Dropout rate.
         """
-        super(SequenceCNNLSTM, self).__init__()
+        super().__init__()
 
         if cnn_channels is None:
             cnn_channels = [32, 64]
@@ -81,12 +81,14 @@ class SequenceCNNLSTM(nn.Module):
         conv_layers = []
         in_ch = in_channels
         for out_ch in cnn_channels:
-            conv_layers.extend([
-                nn.Conv1d(in_ch, out_ch, kernel_size=7, padding=3),
-                nn.BatchNorm1d(out_ch),
-                nn.ReLU(inplace=True),
-                nn.MaxPool1d(kernel_size=2),
-            ])
+            conv_layers.extend(
+                [
+                    nn.Conv1d(in_ch, out_ch, kernel_size=7, padding=3),
+                    nn.BatchNorm1d(out_ch),
+                    nn.ReLU(inplace=True),
+                    nn.MaxPool1d(kernel_size=2),
+                ]
+            )
             in_ch = out_ch
         self.cnn = nn.Sequential(*conv_layers)
 
@@ -112,12 +114,14 @@ class SequenceCNNLSTM(nn.Module):
         fc_layers_list = []
         in_features = lstm_output_size
         for hidden in fc_layers:
-            fc_layers_list.extend([
-                nn.Linear(in_features, hidden),
-                nn.BatchNorm1d(hidden),
-                nn.ReLU(inplace=True),
-                nn.Dropout(p=dropout),
-            ])
+            fc_layers_list.extend(
+                [
+                    nn.Linear(in_features, hidden),
+                    nn.BatchNorm1d(hidden),
+                    nn.ReLU(inplace=True),
+                    nn.Dropout(p=dropout),
+                ]
+            )
             in_features = hidden
         fc_layers_list.append(nn.Linear(in_features, num_classes))
         self.fc = nn.Sequential(*fc_layers_list)

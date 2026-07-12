@@ -50,7 +50,7 @@ class CNNBaseline(nn.Module):
         dropout : float
             Dropout rate between FC layers.
         """
-        super(CNNBaseline, self).__init__()
+        super().__init__()
 
         if conv_channels is None:
             conv_channels = [32, 64, 128]
@@ -66,12 +66,14 @@ class CNNBaseline(nn.Module):
         conv_layers = []
         in_ch = in_channels
         for out_ch in conv_channels:
-            conv_layers.extend([
-                nn.Conv1d(in_ch, out_ch, kernel_size=7, padding=3),
-                nn.BatchNorm1d(out_ch),
-                nn.ReLU(inplace=True),
-                nn.MaxPool1d(kernel_size=2),
-            ])
+            conv_layers.extend(
+                [
+                    nn.Conv1d(in_ch, out_ch, kernel_size=7, padding=3),
+                    nn.BatchNorm1d(out_ch),
+                    nn.ReLU(inplace=True),
+                    nn.MaxPool1d(kernel_size=2),
+                ]
+            )
             in_ch = out_ch
         self.conv_block = nn.Sequential(*conv_layers)
 
@@ -82,12 +84,14 @@ class CNNBaseline(nn.Module):
         fc_layers_list = []
         in_features = self._conv_out_size
         for hidden in fc_layers:
-            fc_layers_list.extend([
-                nn.Linear(in_features, hidden),
-                nn.BatchNorm1d(hidden),
-                nn.ReLU(inplace=True),
-                nn.Dropout(p=dropout),
-            ])
+            fc_layers_list.extend(
+                [
+                    nn.Linear(in_features, hidden),
+                    nn.BatchNorm1d(hidden),
+                    nn.ReLU(inplace=True),
+                    nn.Dropout(p=dropout),
+                ]
+            )
             in_features = hidden
         fc_layers_list.append(nn.Linear(in_features, num_classes))
         self.fc_block = nn.Sequential(*fc_layers_list)
