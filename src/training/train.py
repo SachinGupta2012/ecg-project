@@ -11,10 +11,9 @@ Complete training pipeline with:
 
 import logging
 import time
-from pathlib import Path
 from dataclasses import dataclass, field
+from pathlib import Path
 
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -165,7 +164,7 @@ class Trainer:
         correct = 0
         total = 0
 
-        for batch_idx, (beats, labels) in enumerate(train_loader):
+        for _batch_idx, (beats, labels) in enumerate(train_loader):
             beats = beats.to(self.device)
             labels = labels.to(self.device)
 

@@ -13,8 +13,8 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.routes import router
 from src.api.database import init_db
+from src.api.routes import router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,7 +27,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
-    
+
     app = FastAPI(
         title="ECG Arrhythmia Detection API",
         description=(

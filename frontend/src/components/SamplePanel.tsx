@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { analyzeSampleRecord, ModelInfo } from '@/lib/api';
+import { analyzeSampleRecord } from '@/lib/api';
 
 interface SamplePanelProps {
   onAnalysisComplete: (analysisId: string) => void;
@@ -40,9 +40,10 @@ export default function SamplePanel({
     try {
       const result = await analyzeSampleRecord(selectedRecord);
       onAnalysisComplete(result.analysis_id);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Analysis failed:', err);
-      setError(err.response?.data?.detail || 'Analysis failed. Is the backend running?');
+      const message = err instanceof Error ? err.message : 'Analysis failed. Is the backend running?';
+      setError(message);
     } finally {
       setIsLoading(false);
     }

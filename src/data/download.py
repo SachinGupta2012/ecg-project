@@ -8,8 +8,6 @@ Usage:
     python -m src.data.download
 """
 
-import os
-import sys
 import logging
 from pathlib import Path
 

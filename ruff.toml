@@ -1,0 +1,28 @@
+# Ruff linter configuration for ECG Project
+# https://docs.astral.sh/ruff/configuration/
+
+target-version = "py311"
+line-length = 100
+
+[lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "E402",   # module level import not at top (sys.path.insert pattern)
+    "B008",   # function call in default argument (FastAPI Depends)
+    "B904",   # raise from err (not needed for HTTP exceptions)
+    "B007",   # unused loop variable
+    "B905",   # zip() without strict= (Python 3.10+)
+]
+
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"src/training/*" = ["F841"]
+"src/data/*" = ["F841"]

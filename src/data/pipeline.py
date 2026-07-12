@@ -11,13 +11,11 @@ import logging
 import sys
 from pathlib import Path
 
-import numpy as np
-
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.data.download import download_mitdb, get_record_names, load_record
+from src.data.download import download_mitdb
 from src.data.preprocessing import ECGPreprocessor, load_config
 from src.data.split import patient_wise_split, save_split_data
 

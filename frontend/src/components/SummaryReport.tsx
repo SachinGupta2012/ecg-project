@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Analysis, AnalysisSummary, ClassDistribution } from '@/lib/api';
+import { Analysis, ClassDistribution, AbnormalSegment } from '@/lib/api';
 
 interface SummaryReportProps {
   analysis: Analysis | null;
@@ -33,8 +33,6 @@ function StatCard({ label, value, color }: { label: string; value: string | numb
 }
 
 function DistributionBar({ distribution }: { distribution: ClassDistribution[] }) {
-  const total = distribution.reduce((sum, d) => sum + d.count, 0);
-  
   return (
     <div className="space-y-2">
       {distribution.map((item) => (
@@ -60,7 +58,7 @@ function DistributionBar({ distribution }: { distribution: ClassDistribution[] }
   );
 }
 
-function AbnormalSegments({ segments }: { segments: any[] }) {
+function AbnormalSegments({ segments }: { segments: AbnormalSegment[] }) {
   if (!segments || segments.length === 0) {
     return (
       <div className="text-gray-500 text-sm italic">

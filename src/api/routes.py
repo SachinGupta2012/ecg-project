@@ -8,14 +8,16 @@ import logging
 import uuid
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.api.database import get_db, init_db
-from src.api.models import Recording, Analysis, BeatPrediction, AbnormalSegment
+from src.api.models import AbnormalSegment, Analysis, BeatPrediction, Recording
 from src.api.schemas import (
-    AnalyzeRequest, SampleRecordRequest, AnalysisResponse,
-    UploadResponse, HealthResponse, ReportResponse, AnalysisStatus,
+    AnalysisResponse,
+    AnalysisStatus,
+    HealthResponse,
+    SampleRecordRequest,
 )
 from src.inference.pipeline import ECGAnalysisPipeline
 from src.inference.predict import get_classifier
@@ -54,10 +56,10 @@ async def list_models():
     """List available models."""
     from pathlib import Path
     PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-    
+
     models = []
     model_dir = PROJECT_ROOT / "models"
-    
+
     # Check CNN baseline
     baseline_path = model_dir / "best_model.pt"
     if baseline_path.exists():
@@ -66,7 +68,7 @@ async def list_models():
             "description": "1D CNN baseline model (671K params)",
             "available": True,
         })
-    
+
     # Check CNN+LSTM
     lstm_path = model_dir / "cnn_lstm" / "best_model.pt"
     if lstm_path.exists():
@@ -75,7 +77,7 @@ async def list_models():
             "description": "CNN+LSTM model (31K params)",
             "available": True,
         })
-    
+
     return {"models": models}
 
 
@@ -83,19 +85,19 @@ async def list_models():
 async def analyze_sample(request: SampleRecordRequest, db: Session = Depends(get_db)):
     """
     Analyze a sample record from the MIT-BIH database.
-    
+
     Use record_name="100" for a quick demo.
     """
     ensure_db()
-    
+
     try:
         # Run analysis
         pipeline = ECGAnalysisPipeline(model_name=request.model_name)
         results = pipeline.analyze_mitdb_record(request.record_name)
-        
+
         if "error" in results:
             raise HTTPException(status_code=400, detail=results["error"])
-        
+
         # Create recording
         recording = Recording(
             id=str(uuid.uuid4()),
@@ -107,7 +109,7 @@ async def analyze_sample(request: SampleRecordRequest, db: Session = Depends(get
         )
         db.add(recording)
         db.flush()
-        
+
         # Create analysis
         analysis = Analysis(
             id=str(uuid.uuid4()),
@@ -124,7 +126,7 @@ async def analyze_sample(request: SampleRecordRequest, db: Session = Depends(get
         )
         db.add(analysis)
         db.flush()
-        
+
         # Save beat predictions
         for beat in results["beat_predictions"]:
             bp = BeatPrediction(
@@ -138,7 +140,7 @@ async def analyze_sample(request: SampleRecordRequest, db: Session = Depends(get
                 probabilities=beat["probabilities"],
             )
             db.add(bp)
-        
+
         # Save abnormal segments
         for seg in results["abnormal_segments"]:
             abn_seg = AbnormalSegment(
@@ -153,9 +155,9 @@ async def analyze_sample(request: SampleRecordRequest, db: Session = Depends(get
                 num_beats=seg.get("num_beats", len(seg["abnormal_beat_indices"])),
             )
             db.add(abn_seg)
-        
+
         db.commit()
-        
+
         return AnalysisResponse(
             analysis_id=analysis.id,
             recording_id=recording.id,
@@ -173,7 +175,7 @@ async def analyze_sample(request: SampleRecordRequest, db: Session = Depends(get
             created_at=analysis.created_at or datetime.utcnow(),
             processing_time_sec=results["processing_time_sec"],
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -189,7 +191,7 @@ async def list_analyses(
 ):
     """List all analyses."""
     ensure_db()
-    
+
     analyses = db.query(Analysis).offset(skip).limit(limit).all()
     return {
         "analyses": [
@@ -212,21 +214,21 @@ async def list_analyses(
 async def get_analysis(analysis_id: str, db: Session = Depends(get_db)):
     """Get analysis by ID."""
     ensure_db()
-    
+
     analysis = db.query(Analysis).filter(Analysis.id == analysis_id).first()
     if not analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
-    
+
     # Get beat predictions
     beats = db.query(BeatPrediction).filter(
         BeatPrediction.analysis_id == analysis_id
     ).order_by(BeatPrediction.beat_index).all()
-    
+
     # Get abnormal segments
     segments = db.query(AbnormalSegment).filter(
         AbnormalSegment.analysis_id == analysis_id
     ).all()
-    
+
     return AnalysisResponse(
         analysis_id=analysis.id,
         recording_id=analysis.recording_id,
@@ -276,15 +278,15 @@ async def get_beat_predictions(
 ):
     """Get beat predictions with pagination."""
     ensure_db()
-    
+
     beats = db.query(BeatPrediction).filter(
         BeatPrediction.analysis_id == analysis_id
     ).order_by(BeatPrediction.beat_index).offset(offset).limit(limit).all()
-    
+
     total = db.query(BeatPrediction).filter(
         BeatPrediction.analysis_id == analysis_id
     ).count()
-    
+
     return {
         "total": total,
         "offset": offset,
@@ -307,12 +309,12 @@ async def get_beat_predictions(
 async def delete_analysis(analysis_id: str, db: Session = Depends(get_db)):
     """Delete an analysis and its results."""
     ensure_db()
-    
+
     analysis = db.query(Analysis).filter(Analysis.id == analysis_id).first()
     if not analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
-    
+
     db.delete(analysis)
     db.commit()
-    
+
     return {"message": "Analysis deleted", "analysis_id": analysis_id}

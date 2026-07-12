@@ -5,11 +5,11 @@ SQLAlchemy setup with SQLite (v1) or PostgreSQL support.
 """
 
 import logging
-from pathlib import Path
 from contextlib import contextmanager
+from pathlib import Path
 
 from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 logger = logging.getLogger(__name__)
 

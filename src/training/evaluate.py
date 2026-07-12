@@ -10,22 +10,22 @@ Comprehensive evaluation with:
 """
 
 import logging
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
 from sklearn.metrics import (
+    accuracy_score,
     classification_report,
     confusion_matrix,
-    roc_auc_score,
     precision_recall_fscore_support,
-    accuracy_score,
+    roc_auc_score,
 )
-import matplotlib.pyplot as plt
-import seaborn as sns
+from torch.utils.data import DataLoader
 
 logger = logging.getLogger(__name__)
 

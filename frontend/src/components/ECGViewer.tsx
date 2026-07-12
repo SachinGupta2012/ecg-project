@@ -146,7 +146,7 @@ export default function ECGViewer({
     };
   }, [predictions, currentTime, height]);
 
-  const handleClick = (event: any) => {
+  const handleClick = (event: { points?: Array<{ pointIndex: number }> }) => {
     if (event.points && event.points[0] && onBeatClick) {
       const pointIndex = event.points[0].pointIndex;
       if (pointIndex < predictions.length) {

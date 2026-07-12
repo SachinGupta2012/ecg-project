@@ -9,7 +9,6 @@ from pathlib import Path
 
 import numpy as np
 import torch
-import torch.nn as nn
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +22,7 @@ AAMI_CLASS_NAMES = {v: k for k, v in AAMI_CLASSES.items()}
 class ECGClassifier:
     """
     ECG arrhythmia classifier that wraps a trained model.
-    
+
     Handles model loading, preprocessing, and inference.
     """
 
@@ -151,7 +150,7 @@ class ECGClassifier:
         """
         if len(beat.shape) == 1:
             beat = beat.reshape(1, -1)
-        
+
         # Add channel dimension if needed
         if len(beat.shape) == 2:
             beat = beat.reshape(1, 1, -1)

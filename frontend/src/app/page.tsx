@@ -60,9 +60,10 @@ export default function Home() {
       
       setError('Analysis timed out');
       setIsLoading(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to fetch analysis:', err);
-      setError(err.message || 'Failed to fetch analysis results');
+      const message = err instanceof Error ? err.message : 'Failed to fetch analysis results';
+      setError(message);
       setIsLoading(false);
     }
   };
@@ -113,6 +114,12 @@ export default function Home() {
             <code className="block mt-2 p-2 bg-yellow-100 rounded text-sm text-yellow-900">
               cd D:\data_science\ecg-project && .venv\Scripts\activate && uvicorn src.api.main:app --host 0.0.0.0 --port 8000
             </code>
+          </div>
+        )}
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700 text-sm">{error}</p>
           </div>
         )}
 

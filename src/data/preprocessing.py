@@ -14,12 +14,12 @@ Usage:
 """
 
 import logging
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 import wfdb
-from scipy.signal import butter, filtfilt, iirnotch
+from scipy.signal import butter, filtfilt
 
 logger = logging.getLogger(__name__)
 
@@ -232,7 +232,7 @@ class ECGPreprocessor:
         r_peak_indices = []
         symbols = []
 
-        for i, (sample_idx, symbol) in enumerate(
+        for _i, (sample_idx, symbol) in enumerate(
             zip(annotation.sample, annotation.symbol)
         ):
             beat = self.extract_beat(filtered_signal, sample_idx)
@@ -357,7 +357,7 @@ def load_config() -> PreprocessingConfig:
 
     config_path = Path(__file__).resolve().parent.parent.parent / "configs" / "config.yaml"
     if config_path.exists():
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             cfg = yaml.safe_load(f)
 
         preprocessing = cfg.get("preprocessing", {})

@@ -11,8 +11,8 @@ from pathlib import Path
 import numpy as np
 import wfdb
 
-from src.data.preprocessing import ECGPreprocessor, load_config, AAMI_CLASS_NAMES
-from src.inference.predict import get_classifier, AAMI_CLASSES
+from src.data.preprocessing import ECGPreprocessor, load_config
+from src.inference.predict import AAMI_CLASSES, get_classifier
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 class ECGAnalysisPipeline:
     """
     Complete ECG analysis pipeline.
-    
+
     Steps:
     1. Load ECG signal (from file or MIT-BIH record)
     2. Preprocess (filter, segment, normalize)

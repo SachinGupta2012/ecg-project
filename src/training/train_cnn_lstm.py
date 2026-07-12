@@ -4,20 +4,20 @@ Train CNN+LSTM Model for ECG Arrhythmia Detection
 Trains the CNN+LSTM model and compares against the CNN baseline.
 """
 
-import sys
 import logging
+import sys
 from pathlib import Path
 
-import torch
 import numpy as np
+import torch
 
 PROJECT_ROOT = Path(r"D:\data_science\ecg-project")
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.data.dataset import load_split_and_create_dataloaders
 from src.models.cnn_lstm import CNNLSTM
+from src.training.evaluate import AAMI_CLASS_NAMES, evaluate_model
 from src.training.train import Trainer, TrainingConfig
-from src.training.evaluate import evaluate_model, AAMI_CLASS_NAMES
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)

@@ -4,12 +4,12 @@ Train Sequence CNN+LSTM for ECG Arrhythmia Detection
 Trains the sequence-aware CNN+LSTM model that processes consecutive beats.
 """
 
-import sys
 import logging
+import sys
 from pathlib import Path
 
-import torch
 import numpy as np
+import torch
 
 PROJECT_ROOT = Path(r"D:\data_science\ecg-project")
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -17,7 +17,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.data.sequence_dataset import load_split_and_create_sequence_dataloaders
 from src.models.sequence_cnn_lstm import SequenceCNNLSTM
 from src.training.train import Trainer, TrainingConfig
-from src.training.evaluate import AAMI_CLASS_NAMES
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -35,8 +34,9 @@ class SequenceEvaluator:
     def evaluate(self, data_loader):
         """Evaluate on a data loader."""
         from sklearn.metrics import (
-            accuracy_score, precision_recall_fscore_support,
-            roc_auc_score, confusion_matrix, classification_report
+            accuracy_score,
+            precision_recall_fscore_support,
+            roc_auc_score,
         )
 
         all_preds = []

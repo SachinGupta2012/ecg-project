@@ -5,14 +5,13 @@ Request and response models for the FastAPI backend.
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
-
 # --- Enums ---
 
-class AAMIClass(str, Enum):
+class AAMIClass(StrEnum):
     """AAMI beat classification classes."""
     N = "N"
     S = "S"
@@ -21,7 +20,7 @@ class AAMIClass(str, Enum):
     Q = "Q"
 
 
-class AnalysisStatus(str, Enum):
+class AnalysisStatus(StrEnum):
     """Analysis status."""
     PENDING = "pending"
     PROCESSING = "processing"

@@ -7,21 +7,21 @@ Usage:
     python -m src.training.train_baseline
 """
 
-import sys
 import logging
+import sys
 from pathlib import Path
 
-import torch
 import numpy as np
+import torch
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.data.dataset import load_split_and_create_dataloaders, ECGBeatDataset
+from src.data.dataset import load_split_and_create_dataloaders
 from src.models.cnn_baseline import CNNBaseline
-from src.training.train import Trainer, TrainingConfig
 from src.training.evaluate import evaluate_model
+from src.training.train import Trainer, TrainingConfig
 
 logging.basicConfig(
     level=logging.INFO,

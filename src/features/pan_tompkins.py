@@ -18,9 +18,10 @@ training. This implementation is useful for:
 - Future real-time streaming
 """
 
-import numpy as np
-from scipy.signal import butter, filtfilt, windows
 from dataclasses import dataclass
+
+import numpy as np
+from scipy.signal import butter, filtfilt
 
 
 @dataclass

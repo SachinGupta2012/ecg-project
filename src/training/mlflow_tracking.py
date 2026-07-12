@@ -5,8 +5,8 @@ Logs experiments, parameters, metrics, and models to MLflow.
 """
 
 import logging
-from pathlib import Path
 from contextlib import contextmanager
+from pathlib import Path
 
 import mlflow
 import mlflow.pytorch
@@ -21,7 +21,7 @@ def load_mlflow_config() -> dict:
     """Load MLflow configuration from config.yaml."""
     config_path = PROJECT_ROOT / "configs" / "config.yaml"
     if config_path.exists():
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             cfg = yaml.safe_load(f)
         return cfg.get("mlflow", {})
     return {}
@@ -148,7 +148,6 @@ def log_confusion_matrix(cm, class_names: list[str]):
     """
     import matplotlib.pyplot as plt
     import seaborn as sns
-    import numpy as np
 
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.heatmap(

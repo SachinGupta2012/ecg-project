@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
+from torch.utils.data import DataLoader, Dataset, WeightedRandomSampler
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +104,7 @@ class ECGSequenceDataset(Dataset):
 class SingleBeatWithNeighbors:
     """
     Extends ECGBeatDataset to include neighboring beat features.
-    
+
     Instead of raw sequences, this extracts handcrafted features from
     neighboring beats (like RR intervals) to augment the single-beat input.
     """
@@ -153,17 +153,17 @@ class SingleBeatWithNeighbors:
             # Get context RR intervals
             context_start = max(0, idx - self.seq_context)
             context_end = min(len(self.rr_intervals), idx + self.seq_context + 1)
-            
+
             # Pad if at boundary
             rr_context = self.rr_intervals[context_start:context_end]
             if len(rr_context) < 2 * self.seq_context + 1:
                 rr_context = np.pad(rr_context, (0, 2 * self.seq_context + 1 - len(rr_context)))
-            
+
             # Compute statistics
             mean_rr = np.mean(rr_context)
             std_rr = np.std(rr_context)
             rr_ratio = self.rr_intervals[idx] / mean_rr if mean_rr > 0 else 1.0
-            
+
             # Append features to beat
             extra_features = np.array([mean_rr, std_rr, rr_ratio], dtype=np.float32)
             beat = np.concatenate([beat, extra_features])
@@ -173,8 +173,8 @@ class SingleBeatWithNeighbors:
 
 # Import ECGBeatDataset from dataset.py
 import sys
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from src.data.dataset import ECGBeatDataset
 
 
 def create_sequence_dataloaders(
@@ -236,7 +236,7 @@ def create_sequence_dataloaders(
         class_counts = np.bincount(center_labels, minlength=5).astype(float)
         class_weights = len(center_labels) / (5 * class_counts + 1e-8)
         sample_weights = class_weights[center_labels]
-        
+
         sampler = WeightedRandomSampler(
             weights=sample_weights,
             num_samples=len(sample_weights),

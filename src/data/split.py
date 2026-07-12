@@ -284,6 +284,6 @@ def load_config() -> dict:
     """Load split configuration from config.yaml."""
     config_path = PROJECT_ROOT / "configs" / "config.yaml"
     if config_path.exists():
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             return yaml.safe_load(f)
     return {}

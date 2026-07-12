@@ -6,10 +6,7 @@ SQLAlchemy Database Models for ECG Arrhythmia API
 import uuid
 from datetime import datetime
 
-from sqlalchemy import (
-    Column, String, Integer, Float, DateTime, JSON,
-    Text, Boolean, ForeignKey
-)
+from sqlalchemy import JSON, Boolean, Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from src.api.database import Base

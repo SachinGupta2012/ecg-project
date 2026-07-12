@@ -6,11 +6,10 @@ Provides Dataset and DataLoader classes for loading preprocessed ECG beats.
 
 import logging
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import torch
-from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
+from torch.utils.data import DataLoader, Dataset, WeightedRandomSampler
 
 logger = logging.getLogger(__name__)
 
