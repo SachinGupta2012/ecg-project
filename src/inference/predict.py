@@ -73,16 +73,25 @@ class ECGClassifier:
         try:
             if self.model_name == "cnn_baseline":
                 from src.models.cnn_baseline import CNNBaseline
+
                 self.model = CNNBaseline(num_classes=5, in_channels=1, window_size=288)
             elif self.model_name in ("cnn_lstm", "cnn_lstm_light"):
                 from src.models.cnn_lstm import CNNLSTM
+
                 self.model = CNNLSTM(
-                    num_classes=5, in_channels=1, window_size=288,
-                    cnn_channels=[16, 32], lstm_hidden=64, lstm_layers=1,
-                    bidirectional=False, fc_layers=[32], dropout=0.3,
+                    num_classes=5,
+                    in_channels=1,
+                    window_size=288,
+                    cnn_channels=[16, 32],
+                    lstm_hidden=64,
+                    lstm_layers=1,
+                    bidirectional=False,
+                    fc_layers=[32],
+                    dropout=0.3,
                 )
             elif self.model_name == "sequence_cnn_lstm":
                 from src.models.sequence_cnn_lstm import SequenceCNNLSTM
+
                 self.model = SequenceCNNLSTM(num_classes=5, in_channels=1, window_size=288)
             else:
                 raise ValueError(f"Unknown model: {self.model_name}")
@@ -159,10 +168,7 @@ class ECGClassifier:
 
         pred_class = AAMI_CLASSES[int(preds[0])]
         confidence = float(confidences[0])
-        probabilities = {
-            AAMI_CLASSES[i]: float(probs[0, i])
-            for i in range(5)
-        }
+        probabilities = {AAMI_CLASSES[i]: float(probs[0, i]) for i in range(5)}
 
         return {
             "predicted_class": pred_class,

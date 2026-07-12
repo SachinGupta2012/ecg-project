@@ -35,7 +35,10 @@ def main():
     # Load data
     logger.info("Loading data...")
     train_loader, val_loader, test_loader = load_split_and_create_dataloaders(
-        split_dir=PROCESSED_DIR, batch_size=128, num_workers=0, balanced_sampling=True,
+        split_dir=PROCESSED_DIR,
+        batch_size=128,
+        num_workers=0,
+        balanced_sampling=True,
     )
 
     # Class weights
@@ -88,7 +91,10 @@ def main():
     logger.info("=" * 60)
 
     result = evaluate_model(
-        model=model, test_loader=test_loader, device="cpu", save_dir=str(EVAL_DIR),
+        model=model,
+        test_loader=test_loader,
+        device="cpu",
+        save_dir=str(EVAL_DIR),
     )
 
     # Print results

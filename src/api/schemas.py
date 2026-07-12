@@ -11,8 +11,10 @@ from pydantic import BaseModel, Field
 
 # --- Enums ---
 
+
 class AAMIClass(StrEnum):
     """AAMI beat classification classes."""
+
     N = "N"
     S = "S"
     V = "V"
@@ -22,6 +24,7 @@ class AAMIClass(StrEnum):
 
 class AnalysisStatus(StrEnum):
     """Analysis status."""
+
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
@@ -30,8 +33,10 @@ class AnalysisStatus(StrEnum):
 
 # --- Beat-level schemas ---
 
+
 class BeatPrediction(BaseModel):
     """Single beat prediction."""
+
     beat_index: int = Field(..., description="Index of the beat in the recording")
     sample_index: int = Field(..., description="Sample index in the original signal")
     timestamp_sec: float = Field(..., description="Time in seconds from start")
@@ -42,6 +47,7 @@ class BeatPrediction(BaseModel):
 
 class BeatAnnotation(BaseModel):
     """Original annotation for a beat."""
+
     beat_index: int
     sample_index: int
     timestamp_sec: float
@@ -51,8 +57,10 @@ class BeatAnnotation(BaseModel):
 
 # --- Recording-level schemas ---
 
+
 class ClassDistribution(BaseModel):
     """Distribution of beat classes."""
+
     class_name: AAMIClass
     count: int
     percentage: float
@@ -60,6 +68,7 @@ class ClassDistribution(BaseModel):
 
 class AbnormalSegment(BaseModel):
     """Abnormal segment with clustered abnormal beats."""
+
     start_time_sec: float
     end_time_sec: float
     duration_sec: float
@@ -71,43 +80,39 @@ class AbnormalSegment(BaseModel):
 
 class AnalysisSummary(BaseModel):
     """Summary of the full analysis."""
+
     total_beats: int
     normal_beats: int
     abnormal_beats: int
     class_distribution: list[ClassDistribution]
     abnormal_segments: list[AbnormalSegment]
     overall_confidence: float
-    flagged_for_review: bool = Field(
-        ..., description="True if significant abnormalities detected"
-    )
+    flagged_for_review: bool = Field(..., description="True if significant abnormalities detected")
 
 
 # --- Request schemas ---
 
+
 class AnalyzeRequest(BaseModel):
     """Request to analyze an ECG recording."""
-    record_name: str | None = Field(
-        None, description="MIT-BIH record name (e.g., '100') for demo"
-    )
-    model_name: str = Field(
-        "cnn_baseline", description="Model to use: cnn_baseline or cnn_lstm"
-    )
+
+    record_name: str | None = Field(None, description="MIT-BIH record name (e.g., '100') for demo")
+    model_name: str = Field("cnn_baseline", description="Model to use: cnn_baseline or cnn_lstm")
 
 
 class SampleRecordRequest(BaseModel):
     """Request to analyze a sample record from MIT-BIH."""
-    record_name: str = Field(
-        "100", description="MIT-BIH record name to analyze"
-    )
-    model_name: str = Field(
-        "cnn_baseline", description="Model to use: cnn_baseline or cnn_lstm"
-    )
+
+    record_name: str = Field("100", description="MIT-BIH record name to analyze")
+    model_name: str = Field("cnn_baseline", description="Model to use: cnn_baseline or cnn_lstm")
 
 
 # --- Response schemas ---
 
+
 class UploadResponse(BaseModel):
     """Response after uploading an ECG file."""
+
     recording_id: str
     filename: str
     num_samples: int
@@ -118,6 +123,7 @@ class UploadResponse(BaseModel):
 
 class AnalysisResponse(BaseModel):
     """Full analysis response."""
+
     analysis_id: str
     recording_id: str
     status: AnalysisStatus
@@ -129,6 +135,7 @@ class AnalysisResponse(BaseModel):
 
 class ReportResponse(BaseModel):
     """Report response with detailed results."""
+
     analysis_id: str
     recording_id: str
     status: AnalysisStatus
@@ -140,6 +147,7 @@ class ReportResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     """Health check response."""
+
     status: str
     version: str
     model_loaded: bool
@@ -148,7 +156,9 @@ class HealthResponse(BaseModel):
 
 # --- Error schemas ---
 
+
 class ErrorResponse(BaseModel):
     """Error response."""
+
     detail: str
     error_code: str | None = None

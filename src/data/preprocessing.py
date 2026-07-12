@@ -27,22 +27,35 @@ logger = logging.getLogger(__name__)
 @dataclass
 class PreprocessingConfig:
     """Preprocessing configuration loaded from config.yaml."""
+
     sampling_rate: int = 360
-    window_samples: int = 288          # ~0.8 seconds at 360 Hz
-    low_cutoff: float = 0.5            # Hz - bandpass low cutoff
-    high_cutoff: float = 40.0          # Hz - bandpass high cutoff
-    filter_order: int = 4              # Butterworth filter order
-    normalization: str = "z-score"     # z-score per beat
+    window_samples: int = 288  # ~0.8 seconds at 360 Hz
+    low_cutoff: float = 0.5  # Hz - bandpass low cutoff
+    high_cutoff: float = 40.0  # Hz - bandpass high cutoff
+    filter_order: int = 4  # Butterworth filter order
+    normalization: str = "z-score"  # z-score per beat
 
 
 # AAMI annotation mapping
 # Maps MIT-BIH annotation symbols to 5 AAMI superclasses
 AAMI_MAPPING = {
-    "N": 0, "L": 0, "R": 0, "B": 0,    # Normal
-    "A": 1, "a": 1, "J": 1, "S": 1,    # Supraventricular ectopic
-    "V": 2, "r": 2, "E": 2,             # Ventricular ectopic
-    "F": 3,                              # Fusion
-    "Q": 4, "/": 4, "f": 4, "x": 4, "?": 4,  # Unknown/paced
+    "N": 0,
+    "L": 0,
+    "R": 0,
+    "B": 0,  # Normal
+    "A": 1,
+    "a": 1,
+    "J": 1,
+    "S": 1,  # Supraventricular ectopic
+    "V": 2,
+    "r": 2,
+    "E": 2,  # Ventricular ectopic
+    "F": 3,  # Fusion
+    "Q": 4,
+    "/": 4,
+    "f": 4,
+    "x": 4,
+    "?": 4,  # Unknown/paced
 }
 
 AAMI_CLASS_NAMES = {0: "N", 1: "S", 2: "V", 3: "F", 4: "Q"}
@@ -232,9 +245,7 @@ class ECGPreprocessor:
         r_peak_indices = []
         symbols = []
 
-        for _i, (sample_idx, symbol) in enumerate(
-            zip(annotation.sample, annotation.symbol)
-        ):
+        for _i, (sample_idx, symbol) in enumerate(zip(annotation.sample, annotation.symbol)):
             beat = self.extract_beat(filtered_signal, sample_idx)
             if beat is None:
                 continue

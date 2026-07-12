@@ -22,12 +22,54 @@ DATA_RAW_DIR = PROJECT_ROOT / "data" / "raw"
 
 # MIT-BIH record names (48 records)
 MITDB_RECORDS = [
-    "100", "101", "102", "103", "104", "105", "106", "107",
-    "108", "109", "111", "112", "113", "114", "115", "116",
-    "117", "118", "119", "121", "122", "123", "124", "200",
-    "201", "202", "203", "205", "207", "208", "209", "210",
-    "212", "213", "214", "215", "217", "219", "220", "221",
-    "222", "223", "228", "230", "231", "232", "233", "234",
+    "100",
+    "101",
+    "102",
+    "103",
+    "104",
+    "105",
+    "106",
+    "107",
+    "108",
+    "109",
+    "111",
+    "112",
+    "113",
+    "114",
+    "115",
+    "116",
+    "117",
+    "118",
+    "119",
+    "121",
+    "122",
+    "123",
+    "124",
+    "200",
+    "201",
+    "202",
+    "203",
+    "205",
+    "207",
+    "208",
+    "209",
+    "210",
+    "212",
+    "213",
+    "214",
+    "215",
+    "217",
+    "219",
+    "220",
+    "221",
+    "222",
+    "223",
+    "228",
+    "230",
+    "231",
+    "232",
+    "233",
+    "234",
 ]
 
 
@@ -160,9 +202,7 @@ def get_record_names(data_dir: Path | str | None = None) -> list[str]:
     else:
         data_dir = Path(data_dir)
 
-    records = sorted([
-        f.stem for f in data_dir.glob("*.hea")
-    ])
+    records = sorted([f.stem for f in data_dir.glob("*.hea")])
     return records
 
 
@@ -189,13 +229,15 @@ def list_available_records(data_dir: Path | str | None = None) -> list[str]:
     for record_name in get_record_names(data_dir):
         try:
             record, annotation = load_record(record_name, data_dir)
-            records_info.append({
-                "record": record_name,
-                "num_beats": len(annotation.sample),
-                "duration_sec": record.sig_len / record.fs,
-                "sampling_rate": record.fs,
-                "channels": record.n_sig,
-            })
+            records_info.append(
+                {
+                    "record": record_name,
+                    "num_beats": len(annotation.sample),
+                    "duration_sec": record.sig_len / record.fs,
+                    "sampling_rate": record.fs,
+                    "channels": record.n_sig,
+                }
+            )
         except Exception as e:
             logger.warning(f"Could not load record {record_name}: {e}")
             continue

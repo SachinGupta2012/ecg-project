@@ -1,4 +1,5 @@
 """Tests for CNN baseline model."""
+
 import torch
 
 

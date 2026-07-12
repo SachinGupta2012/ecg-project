@@ -120,6 +120,7 @@ class ECGAnalysisPipeline:
         else:
             # Use Pan-Tompkins for R-peak detection
             from src.features.pan_tompkins import PanTompkins
+
             pan_tompkins = PanTompkins()
             r_peaks = pan_tompkins.detect_r_peaks(signal)
             symbols = ["N"] * len(r_peaks)  # Unknown annotations
@@ -152,18 +153,19 @@ class ECGAnalysisPipeline:
         beat_results = []
         for i in range(len(beats)):
             timestamp = valid_indices[i] / sampling_rate
-            beat_results.append({
-                "beat_index": i,
-                "sample_index": int(valid_indices[i]),
-                "timestamp_sec": round(timestamp, 3),
-                "predicted_class": AAMI_CLASSES[int(predictions[i])],
-                "confidence": round(float(confidences[i]), 4),
-                "probabilities": {
-                    AAMI_CLASSES[j]: round(float(probabilities[i, j]), 4)
-                    for j in range(5)
-                },
-                "original_symbol": valid_symbols[i] if i < len(valid_symbols) else None,
-            })
+            beat_results.append(
+                {
+                    "beat_index": i,
+                    "sample_index": int(valid_indices[i]),
+                    "timestamp_sec": round(timestamp, 3),
+                    "predicted_class": AAMI_CLASSES[int(predictions[i])],
+                    "confidence": round(float(confidences[i]), 4),
+                    "probabilities": {
+                        AAMI_CLASSES[j]: round(float(probabilities[i, j]), 4) for j in range(5)
+                    },
+                    "original_symbol": valid_symbols[i] if i < len(valid_symbols) else None,
+                }
+            )
 
         # Step 6: Generate summary
         predictions_array = predictions
@@ -175,11 +177,13 @@ class ECGAnalysisPipeline:
         for cls_idx, count in zip(unique, counts):
             class_name = AAMI_CLASSES[int(cls_idx)]
             percentage = round(count / total * 100, 1)
-            class_dist.append({
-                "class_name": class_name,
-                "count": int(count),
-                "percentage": percentage,
-            })
+            class_dist.append(
+                {
+                    "class_name": class_name,
+                    "count": int(count),
+                    "percentage": percentage,
+                }
+            )
             if class_name == "N":
                 normal_count = int(count)
 
@@ -235,10 +239,7 @@ class ECGAnalysisPipeline:
         list of dict
             Abnormal segments.
         """
-        abnormal_beats = [
-            (i, b) for i, b in enumerate(beat_results)
-            if b["predicted_class"] != "N"
-        ]
+        abnormal_beats = [(i, b) for i, b in enumerate(beat_results) if b["predicted_class"] != "N"]
 
         if len(abnormal_beats) < min_abnormal_beats:
             return []
@@ -248,7 +249,7 @@ class ECGAnalysisPipeline:
         current_segment = [abnormal_beats[0]]
 
         for i in range(1, len(abnormal_beats)):
-            prev_time = abnormal_beats[i-1][1]["timestamp_sec"]
+            prev_time = abnormal_beats[i - 1][1]["timestamp_sec"]
             curr_time = abnormal_beats[i][1]["timestamp_sec"]
 
             if curr_time - prev_time <= time_window_sec:
@@ -270,25 +271,26 @@ class ECGAnalysisPipeline:
 
             # Dominant class
             from collections import Counter
+
             dominant_class = Counter(classes).most_common(1)[0][0]
 
-            result_segments.append({
-                "start_time_sec": round(segment[0][1]["timestamp_sec"], 3),
-                "end_time_sec": round(segment[-1][1]["timestamp_sec"], 3),
-                "duration_sec": round(
-                    segment[-1][1]["timestamp_sec"] - segment[0][1]["timestamp_sec"], 3
-                ),
-                "abnormal_beat_indices": beat_indices,
-                "dominant_class": dominant_class,
-                "avg_confidence": round(float(np.mean(confidences)), 4),
-                "num_beats": len(beat_indices),
-            })
+            result_segments.append(
+                {
+                    "start_time_sec": round(segment[0][1]["timestamp_sec"], 3),
+                    "end_time_sec": round(segment[-1][1]["timestamp_sec"], 3),
+                    "duration_sec": round(
+                        segment[-1][1]["timestamp_sec"] - segment[0][1]["timestamp_sec"], 3
+                    ),
+                    "abnormal_beat_indices": beat_indices,
+                    "dominant_class": dominant_class,
+                    "avg_confidence": round(float(np.mean(confidences)), 4),
+                    "num_beats": len(beat_indices),
+                }
+            )
 
         return result_segments
 
-    def analyze_mitdb_record(
-        self, record_name: str, data_dir: Path | str | None = None
-    ) -> dict:
+    def analyze_mitdb_record(self, record_name: str, data_dir: Path | str | None = None) -> dict:
         """
         Analyze a record from the MIT-BIH database.
 

@@ -25,19 +25,53 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 # Records 100-124: patient IDs 100-124 (some patients have multiple records)
 # Records 200-234: patient IDs 200-234
 RECORD_TO_PATIENT = {
-    "100": "101", "101": "101",
-    "102": "102", "103": "103", "104": "104", "105": "105",
-    "106": "106", "107": "107", "108": "108", "109": "109",
-    "111": "111", "112": "112", "113": "113", "114": "114",
-    "115": "115", "116": "116", "117": "117", "118": "118",
-    "119": "119", "121": "121", "122": "122", "123": "123",
+    "100": "101",
+    "101": "101",
+    "102": "102",
+    "103": "103",
+    "104": "104",
+    "105": "105",
+    "106": "106",
+    "107": "107",
+    "108": "108",
+    "109": "109",
+    "111": "111",
+    "112": "112",
+    "113": "113",
+    "114": "114",
+    "115": "115",
+    "116": "116",
+    "117": "117",
+    "118": "118",
+    "119": "119",
+    "121": "121",
+    "122": "122",
+    "123": "123",
     "124": "124",
-    "200": "200", "201": "201", "202": "202", "203": "203",
-    "205": "205", "207": "207", "208": "208", "209": "209",
-    "210": "210", "212": "212", "213": "213", "214": "214",
-    "215": "215", "217": "217", "219": "219", "220": "220",
-    "221": "221", "222": "222", "223": "223", "228": "228",
-    "230": "230", "231": "231", "232": "232", "233": "233",
+    "200": "200",
+    "201": "201",
+    "202": "202",
+    "203": "203",
+    "205": "205",
+    "207": "207",
+    "208": "208",
+    "209": "209",
+    "210": "210",
+    "212": "212",
+    "213": "213",
+    "214": "214",
+    "215": "215",
+    "217": "217",
+    "219": "219",
+    "220": "220",
+    "221": "221",
+    "222": "222",
+    "223": "223",
+    "228": "228",
+    "230": "230",
+    "231": "231",
+    "232": "232",
+    "233": "233",
     "234": "234",
 }
 
@@ -92,8 +126,9 @@ def patient_wise_split(
             "patient_split": dict mapping patient_id to split name,
         }
     """
-    assert abs(train_ratio + val_ratio + test_ratio - 1.0) < 1e-6, \
+    assert abs(train_ratio + val_ratio + test_ratio - 1.0) < 1e-6, (
         f"Ratios must sum to 1.0, got {train_ratio + val_ratio + test_ratio}"
+    )
 
     rng = np.random.RandomState(seed)
 
@@ -121,8 +156,8 @@ def patient_wise_split(
     n_val = int(num_patients * val_ratio)
 
     train_patients = unique_patients[:n_train]
-    val_patients = unique_patients[n_train:n_train + n_val]
-    test_patients = unique_patients[n_train + n_val:]
+    val_patients = unique_patients[n_train : n_train + n_val]
+    test_patients = unique_patients[n_train + n_val :]
 
     logger.info(f"Train patients: {len(train_patients)}")
     logger.info(f"Val patients: {len(val_patients)}")
@@ -158,9 +193,7 @@ def patient_wise_split(
             split_r_peaks = None
 
         # Get unique patients in this split
-        split_patient_ids = list(set(
-            get_patient_id(r) for r in split_records
-        ))
+        split_patient_ids = list(set(get_patient_id(r) for r in split_records))
 
         # Label distribution for this split
         unique, counts = np.unique(split_labels, return_counts=True)
@@ -239,6 +272,7 @@ def save_split_data(
 
     # Save patient split mapping
     import json
+
     with open(output_dir / "patient_split.json", "w") as f:
         json.dump(split_result["patient_split"], f, indent=2)
 

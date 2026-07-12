@@ -19,6 +19,7 @@ def generate_uuid() -> str:
 
 class Recording(Base):
     """ECG Recording metadata."""
+
     __tablename__ = "recordings"
 
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -35,6 +36,7 @@ class Recording(Base):
 
 class Analysis(Base):
     """ECG Analysis results."""
+
     __tablename__ = "analyses"
 
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -56,12 +58,17 @@ class Analysis(Base):
 
     # Relationships
     recording = relationship("Recording", back_populates="analyses")
-    beat_predictions = relationship("BeatPrediction", back_populates="analysis", cascade="all, delete-orphan")
-    abnormal_segments = relationship("AbnormalSegment", back_populates="analysis", cascade="all, delete-orphan")
+    beat_predictions = relationship(
+        "BeatPrediction", back_populates="analysis", cascade="all, delete-orphan"
+    )
+    abnormal_segments = relationship(
+        "AbnormalSegment", back_populates="analysis", cascade="all, delete-orphan"
+    )
 
 
 class BeatPrediction(Base):
     """Individual beat prediction."""
+
     __tablename__ = "beat_predictions"
 
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -79,6 +86,7 @@ class BeatPrediction(Base):
 
 class AbnormalSegment(Base):
     """Clustered abnormal beat segment."""
+
     __tablename__ = "abnormal_segments"
 
     id = Column(String, primary_key=True, default=generate_uuid)

@@ -42,6 +42,7 @@ def ensure_db():
 async def health_check():
     """Health check endpoint."""
     from src.api.database import check_database_connection
+
     classifier = get_classifier()
     return HealthResponse(
         status="healthy",
@@ -55,6 +56,7 @@ async def health_check():
 async def list_models():
     """List available models."""
     from pathlib import Path
+
     PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
     models = []
@@ -63,20 +65,24 @@ async def list_models():
     # Check CNN baseline
     baseline_path = model_dir / "best_model.pt"
     if baseline_path.exists():
-        models.append({
-            "name": "cnn_baseline",
-            "description": "1D CNN baseline model (671K params)",
-            "available": True,
-        })
+        models.append(
+            {
+                "name": "cnn_baseline",
+                "description": "1D CNN baseline model (671K params)",
+                "available": True,
+            }
+        )
 
     # Check CNN+LSTM
     lstm_path = model_dir / "cnn_lstm" / "best_model.pt"
     if lstm_path.exists():
-        models.append({
-            "name": "cnn_lstm",
-            "description": "CNN+LSTM model (31K params)",
-            "available": True,
-        })
+        models.append(
+            {
+                "name": "cnn_lstm",
+                "description": "CNN+LSTM model (31K params)",
+                "available": True,
+            }
+        )
 
     return {"models": models}
 
@@ -220,14 +226,15 @@ async def get_analysis(analysis_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Analysis not found")
 
     # Get beat predictions
-    beats = db.query(BeatPrediction).filter(
-        BeatPrediction.analysis_id == analysis_id
-    ).order_by(BeatPrediction.beat_index).all()
+    beats = (
+        db.query(BeatPrediction)
+        .filter(BeatPrediction.analysis_id == analysis_id)
+        .order_by(BeatPrediction.beat_index)
+        .all()
+    )
 
     # Get abnormal segments
-    segments = db.query(AbnormalSegment).filter(
-        AbnormalSegment.analysis_id == analysis_id
-    ).all()
+    segments = db.query(AbnormalSegment).filter(AbnormalSegment.analysis_id == analysis_id).all()
 
     return AnalysisResponse(
         analysis_id=analysis.id,
@@ -279,13 +286,16 @@ async def get_beat_predictions(
     """Get beat predictions with pagination."""
     ensure_db()
 
-    beats = db.query(BeatPrediction).filter(
-        BeatPrediction.analysis_id == analysis_id
-    ).order_by(BeatPrediction.beat_index).offset(offset).limit(limit).all()
+    beats = (
+        db.query(BeatPrediction)
+        .filter(BeatPrediction.analysis_id == analysis_id)
+        .order_by(BeatPrediction.beat_index)
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
 
-    total = db.query(BeatPrediction).filter(
-        BeatPrediction.analysis_id == analysis_id
-    ).count()
+    total = db.query(BeatPrediction).filter(BeatPrediction.analysis_id == analysis_id).count()
 
     return {
         "total": total,

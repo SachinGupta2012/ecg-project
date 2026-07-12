@@ -62,7 +62,7 @@ class ECGSequenceDataset(Dataset):
         # (can't create sequences across record boundaries)
         self.record_changes = [0]
         for i in range(1, len(records)):
-            if records[i] != records[i-1]:
+            if records[i] != records[i - 1]:
                 self.record_changes.append(i)
         self.record_changes.append(len(records))
 
@@ -140,7 +140,7 @@ class SingleBeatWithNeighbors:
         if r_peaks is not None:
             self.rr_intervals = np.zeros(len(r_peaks))
             for i in range(1, len(r_peaks)):
-                self.rr_intervals[i] = (r_peaks[i] - r_peaks[i-1]) / sampling_rate
+                self.rr_intervals[i] = (r_peaks[i] - r_peaks[i - 1]) / sampling_rate
         else:
             self.rr_intervals = None
 
@@ -229,10 +229,12 @@ def create_sequence_dataloaders(
     # Create samplers/loaders
     if balanced_sampling and len(train_dataset) > 0:
         # Get labels for sampling (center beat labels)
-        center_labels = np.array([
-            train_dataset.labels[train_dataset.valid_indices[i]]
-            for i in range(len(train_dataset))
-        ])
+        center_labels = np.array(
+            [
+                train_dataset.labels[train_dataset.valid_indices[i]]
+                for i in range(len(train_dataset))
+            ]
+        )
         class_counts = np.bincount(center_labels, minlength=5).astype(float)
         class_weights = len(center_labels) / (5 * class_counts + 1e-8)
         sample_weights = class_weights[center_labels]

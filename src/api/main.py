@@ -67,6 +67,7 @@ def create_app() -> FastAPI:
         logger.info("Pre-loading model...")
         try:
             from src.inference.predict import get_classifier
+
             classifier = get_classifier("cnn_baseline")
             if classifier.is_loaded:
                 logger.info("Model loaded successfully.")
@@ -93,6 +94,7 @@ app = create_app()
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(
         "src.api.main:app",
         host="0.0.0.0",

@@ -27,12 +27,13 @@ from scipy.signal import butter, filtfilt
 @dataclass
 class PanTompkinsConfig:
     """Configuration for the Pan-Tompkins algorithm."""
+
     sampling_rate: int = 360
-    low_pass_cutoff: float = 5.0       # Hz
-    high_pass_cutoff: float = 11.0     # Hz
+    low_pass_cutoff: float = 5.0  # Hz
+    high_pass_cutoff: float = 11.0  # Hz
     filter_order: int = 1
-    integration_window_ms: int = 150   # ms
-    refractory_period_ms: int = 200    # ms
+    integration_window_ms: int = 150  # ms
+    refractory_period_ms: int = 200  # ms
     threshold_adaptive: bool = True
 
 
@@ -105,7 +106,7 @@ class PanTompkins:
         np.ndarray
             Squared signal.
         """
-        return signal ** 2
+        return signal**2
 
     def moving_window_integration(self, signal: np.ndarray) -> np.ndarray:
         """
@@ -121,9 +122,7 @@ class PanTompkins:
         np.ndarray
             Integrated signal.
         """
-        window_size = int(
-            self.config.integration_window_ms * self.fs / 1000.0
-        )
+        window_size = int(self.config.integration_window_ms * self.fs / 1000.0)
         if window_size < 1:
             window_size = 1
 
@@ -170,9 +169,7 @@ class PanTompkins:
             noise_peak = initial_noise_peak
 
         # Refractory period (200ms)
-        refractory_samples = int(
-            self.config.refractory_period_ms * self.fs / 1000.0
-        )
+        refractory_samples = int(self.config.refractory_period_ms * self.fs / 1000.0)
 
         # Thresholds
         threshold = signal_peak
@@ -187,7 +184,7 @@ class PanTompkins:
             # Find local maximum within a search window
             search_window = int(0.15 * self.fs)  # 150ms search back
             start = max(0, i - search_window)
-            peak_idx = start + np.argmax(signal[start:i + 1])
+            peak_idx = start + np.argmax(signal[start : i + 1])
             peak_val = signal[peak_idx]
 
             if peak_val > threshold:
@@ -249,9 +246,7 @@ class PanTompkins:
 
         return r_peaks
 
-    def detect_and_filter(
-        self, signal: np.ndarray, min_distance_ms: float = 200.0
-    ) -> np.ndarray:
+    def detect_and_filter(self, signal: np.ndarray, min_distance_ms: float = 200.0) -> np.ndarray:
         """
         Detect R-peaks and apply additional filtering.
 
@@ -329,8 +324,16 @@ class PanTompkins:
         false_positives = len(detected) - len(matched_detections)
         false_negatives = len(annotation_samples) - len(matched_annotations)
 
-        precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
-        recall = true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0
+        precision = (
+            true_positives / (true_positives + false_positives)
+            if (true_positives + false_positives) > 0
+            else 0
+        )
+        recall = (
+            true_positives / (true_positives + false_negatives)
+            if (true_positives + false_negatives) > 0
+            else 0
+        )
         f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
 
         return {

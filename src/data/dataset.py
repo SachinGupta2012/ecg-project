@@ -143,9 +143,15 @@ def create_dataloaders(
     val_dataset = ECGBeatDataset(val_beats, val_labels)
     test_dataset = ECGBeatDataset(test_beats, test_labels)
 
-    logger.info(f"Train: {len(train_dataset)} beats, distribution: {train_dataset.get_label_distribution()}")
-    logger.info(f"Val: {len(val_dataset)} beats, distribution: {val_dataset.get_label_distribution()}")
-    logger.info(f"Test: {len(test_dataset)} beats, distribution: {test_dataset.get_label_distribution()}")
+    logger.info(
+        f"Train: {len(train_dataset)} beats, distribution: {train_dataset.get_label_distribution()}"
+    )
+    logger.info(
+        f"Val: {len(val_dataset)} beats, distribution: {val_dataset.get_label_distribution()}"
+    )
+    logger.info(
+        f"Test: {len(test_dataset)} beats, distribution: {test_dataset.get_label_distribution()}"
+    )
 
     # Create samplers/loaders
     if balanced_sampling and len(train_dataset) > 0:

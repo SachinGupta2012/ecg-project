@@ -43,6 +43,7 @@ AAMI_CLASS_FULL = {
 @dataclass
 class EvaluationResult:
     """Container for evaluation results."""
+
     accuracy: float
     precision: float
     recall: float
@@ -132,19 +133,13 @@ class Evaluator:
 
         # Per-class metrics
         per_class_precision, per_class_recall, per_class_f1, support = (
-            precision_recall_fscore_support(
-                labels, preds, average=None, zero_division=0
-            )
+            precision_recall_fscore_support(labels, preds, average=None, zero_division=0)
         )
 
         # AUC (one-vs-rest)
         try:
-            per_class_auc = roc_auc_score(
-                labels, probs, multi_class="ovr", average=None
-            )
-            overall_auc = roc_auc_score(
-                labels, probs, multi_class="ovr", average="macro"
-            )
+            per_class_auc = roc_auc_score(labels, probs, multi_class="ovr", average=None)
+            overall_auc = roc_auc_score(labels, probs, multi_class="ovr", average="macro")
         except ValueError:
             per_class_auc = np.zeros(self.num_classes)
             overall_auc = 0.0
@@ -154,9 +149,7 @@ class Evaluator:
 
         # Classification report
         target_names = [AAMI_CLASS_NAMES[i] for i in range(self.num_classes)]
-        rep = classification_report(
-            labels, preds, target_names=target_names, zero_division=0
-        )
+        rep = classification_report(labels, preds, target_names=target_names, zero_division=0)
 
         result = EvaluationResult(
             accuracy=accuracy,
@@ -287,7 +280,9 @@ class Evaluator:
 
         fig, ax = plt.subplots(figsize=(10, 6))
 
-        bars1 = ax.bar(x - width, result.per_class_precision, width, label="Precision", color="#3498db")
+        bars1 = ax.bar(
+            x - width, result.per_class_precision, width, label="Precision", color="#3498db"
+        )
         bars2 = ax.bar(x, result.per_class_recall, width, label="Recall", color="#2ecc71")
         bars3 = ax.bar(x + width, result.per_class_f1, width, label="F1 Score", color="#e74c3c")
 

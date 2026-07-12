@@ -81,8 +81,7 @@ def run_pipeline() -> None:
     for split_name in ["train", "val", "test"]:
         split = split_result["splits"][split_name]
         logger.info(
-            f"{split_name.upper()}: {split['num_beats']} beats, "
-            f"{split['num_patients']} patients"
+            f"{split_name.upper()}: {split['num_beats']} beats, {split['num_patients']} patients"
         )
 
 

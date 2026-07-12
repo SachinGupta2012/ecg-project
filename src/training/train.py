@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class TrainingConfig:
     """Training configuration."""
+
     epochs: int = 100
     batch_size: int = 64
     learning_rate: float = 0.001
@@ -278,7 +279,7 @@ class Trainer:
             # Log progress
             if (epoch + 1) % 5 == 0 or epoch == 0:
                 logger.info(
-                    f"Epoch [{epoch+1}/{self.config.epochs}] "
+                    f"Epoch [{epoch + 1}/{self.config.epochs}] "
                     f"Train Loss: {train_loss:.4f} | Train Acc: {train_acc:.4f} | "
                     f"Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.4f} | "
                     f"LR: {current_lr:.6f} | Time: {epoch_time:.1f}s"
@@ -286,17 +287,20 @@ class Trainer:
 
             # MLflow callback
             if mlflow_callback is not None:
-                mlflow_callback(epoch, {
-                    "train_loss": train_loss,
-                    "val_loss": val_loss,
-                    "train_acc": train_acc,
-                    "val_acc": val_acc,
-                    "learning_rate": current_lr,
-                })
+                mlflow_callback(
+                    epoch,
+                    {
+                        "train_loss": train_loss,
+                        "val_loss": val_loss,
+                        "train_acc": train_acc,
+                        "val_acc": val_acc,
+                        "learning_rate": current_lr,
+                    },
+                )
 
             # Early stopping
             if self.early_stopping(val_loss):
-                logger.info(f"Early stopping triggered at epoch {epoch+1}")
+                logger.info(f"Early stopping triggered at epoch {epoch + 1}")
                 break
 
         total_time = time.time() - start_time
@@ -319,7 +323,9 @@ class Trainer:
             "val_acc": val_acc,
             "config": {
                 "num_classes": self.model.num_classes if hasattr(self.model, "num_classes") else 5,
-                "conv_channels": self.model.conv_channels if hasattr(self.model, "conv_channels") else None,
+                "conv_channels": self.model.conv_channels
+                if hasattr(self.model, "conv_channels")
+                else None,
                 "fc_layers": self.model.fc_layers if hasattr(self.model, "fc_layers") else None,
             },
         }
