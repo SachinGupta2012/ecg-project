@@ -45,7 +45,14 @@ data/processed/
 *.qrs
 
 # --- Model Checkpoints ---
-models/
+models/*.pt
+models/*.pth
+models/*.onnx
+models/*.pkl
+models/*.joblib
+models/cnn_lstm/
+models/evaluation/
+models/comparison/
 *.pt
 *.pth
 *.onnx
